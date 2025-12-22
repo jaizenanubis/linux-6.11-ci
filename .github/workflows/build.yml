@@ -1,3 +1,52 @@
+name: Build Linux Kernel 6.11
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install base build dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential fakeroot libncurses-dev \
+            bison flex libssl-dev libelf-dev dwarves bc ccache dh-python wget
+
+      - name: Install debhelper-compat 12
+        run: |
+          wget http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb
+          sudo dpkg -i debhelper-compat_12.10ubuntu1_all.deb || sudo apt -f install -y
+
+      - name: Download Linux 6.11 source
+        run: |
+          wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.11.tar.xz
+          tar -xf linux-6.11.tar.xz
+          mv linux-6.11 kernel
+
+      - name: Copy config
+        run: |
+          cp .config kernel/.config
+
+      - name: Prepare config
+        run: |
+          cd kernel
+          make olddefconfig
+
+      - name: Build kernel
+        run: |
+          cd kernel
+          make -j"$(nproc)"
+
+      - name: Build Debian packages
+        run: |
+          cd kernel
+          make bindeb-pkg -j"$(nproc)"
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -5,3 +54,4 @@
           path: |
             *.deb
             *.changes
+            *.buildinfo
