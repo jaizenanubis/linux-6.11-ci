@@ -1,4 +1,4 @@
-8979-u0-name: Build Linux Kernel 6.11
+name: Build Linux Kernel 6.11
 
 on:
   workflow_dispatch:
@@ -11,11 +11,16 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Install build dependencies
+    - name: Install base build dependencies
       run: |
         sudo apt update
         sudo apt install -y build-essential fakeroot libncurses-dev \
-          bison flex libssl-dev libelf-dev dwarves bc ccache debhelper
+          bison flex libssl-dev libelf-dev dwarves bc ccache dh-python wget
+
+    - name: Install debhelper-compat 12
+      run: |
+        wget http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb
+        sudo dpkg -i debhelper-compat_12.10ubuntu1_all.deb || sudo apt -f install -y
 
     - name: Download Linux 6.11 source
       run: |
