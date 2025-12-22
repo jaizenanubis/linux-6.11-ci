@@ -5,3 +5,6 @@ kernel/
 debhelper-compat_12.10ubuntu1_all.deb
 linux-6.11.tar.xz
 kernel/
+debhelper-compat_12.10ubuntu1_all.deb
+linux-6.11.tar.xz
+kernel/
