@@ -1,4 +1,4 @@
-name: Build Linux Kernel 6.11
+8979-u0-name: Build Linux Kernel 6.11
 
 on:
   workflow_dispatch:
