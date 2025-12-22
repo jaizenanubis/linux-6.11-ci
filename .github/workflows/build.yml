@@ -14,15 +14,13 @@ jobs:
       - name: Install base build dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential fakeroot libncurses-dev \
-            bison flex libssl-dev libelf-dev dwarves bc ccache dh-python wget
+          sudo apt install -y build-essential fakeroot libncurses-dev             bison flex libssl-dev libelf-dev dwarves bc ccache dh-python wget
 
       - name: Install debhelper-compat 12
         run: |
           set -e
 
-          if wget -q http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb -O debhelper-compat_12.10ubuntu1_all.deb \
-             || wget -q http://old-releases.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb -O debhelper-compat_12.10ubuntu1_all.deb; then
+          if wget -q http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb -O debhelper-compat_12.10ubuntu1_all.deb || wget -q http://old-releases.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb -O debhelper-compat_12.10ubuntu1_all.deb; then
             sudo dpkg -i debhelper-compat_12.10ubuntu1_all.deb || sudo apt -f install -y
             echo "Installed debhelper-compat from direct .deb"
             exit 0
@@ -36,12 +34,22 @@ jobs:
             "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_12.10_all.deb"
           )
           for url in "${CANDIDATES[@]}"; do
-            if wget -q "$url" -O debhelper-full.deb; then break; else rm -f debhelper-full.deb; fi
+            if wget -q "$url" -O debhelper-full.deb; then
+              break
+            else
+              rm -f debhelper-full.deb
+            fi
           done
-          if [ ! -f debhelper-full.deb ]; then echo "Failed to download a debhelper package"; exit 1; fi
+          if [ ! -f debhelper-full.deb ]; then
+            echo "Failed to download a debhelper package"
+            exit 1
+          fi
           dpkg-deb -x debhelper-full.deb extracted
           COMPAT_FILE=extracted/usr/share/debhelper/compat
-          if [ ! -f "$COMPAT_FILE" ]; then echo "compat file not found"; exit 1; fi
+          if [ ! -f "$COMPAT_FILE" ]; then
+            echo "compat file not found"
+            exit 1
+          fi
           PKGDIR=pkg
           mkdir -p "$PKGDIR/DEBIAN" "$PKGDIR/usr/share/debhelper"
           cat > "$PKGDIR/DEBIAN/control" <<CONTROL_EOF
