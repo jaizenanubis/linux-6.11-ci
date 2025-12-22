@@ -81,7 +81,7 @@ jobs:
           dpkg-deb -x debhelper-full.deb extracted
           COMPAT_FILE="extracted/usr/share/debhelper/compat"
 
-          if [ ! -f "$COMPAT_FILE" ]; then
+          if [ ! -f "$COMPAT_FILE$" ]; then
             echo "compat file not found at $COMPAT_FILE"
             exit 1
           fi
