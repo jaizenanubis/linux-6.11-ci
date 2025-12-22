@@ -63,14 +63,14 @@ jobs:
 
           PKGDIR=pkg
           mkdir -p "$PKGDIR/DEBIAN" "$PKGDIR/usr/share/debhelper"
-          cat > "$PKGDIR/DEBIAN/control" <<EOF
+          cat > "$PKGDIR/DEBIAN/control" <<CONTROL_EOF
 Package: debhelper-compat-12
 Version: 12.10ubuntu1
 Architecture: all
 Maintainer: CI <ci@example.com>
 Description: Compatibility level 12 for debhelper
  This package provides only the debhelper-compat file set to level 12.
-EOF
+CONTROL_EOF
 
           cp "$COMPAT_FILE" "$PKGDIR/usr/share/debhelper/compat"
           dpkg-deb --build "$PKGDIR" debhelper-compat-12_12.10ubuntu1_all.deb
