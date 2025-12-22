@@ -15,7 +15,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y build-essential fakeroot libncurses-dev \
-          bison flex libssl-dev libelf-dev dwarves bc ccache
+          bison flex libssl-dev libelf-dev dwarves bc ccache debhelper
 
     - name: Download Linux 6.11 source
       run: |
@@ -50,4 +50,3 @@ jobs:
           *.deb
           *.changes
           *.buildinfo
-            now
