@@ -20,6 +20,8 @@ jobs:
       - name: Install debhelper-compat 12
         run: |
           set -e
+
+          # Try direct compat package from common mirrors
           if wget -q http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb -O debhelper-compat_12.10ubuntu1_all.deb \
              || wget -q http://old-releases.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb -O debhelper-compat_12.10ubuntu1_all.deb; then
             sudo dpkg -i debhelper-compat_12.10ubuntu1_all.deb || sudo apt -f install -y
@@ -27,20 +29,38 @@ jobs:
             exit 0
           fi
 
+          # Fallback: download a full debhelper .deb, extract compat file, repackage minimal compat package
           WORKDIR=$(mktemp -d)
           cd "$WORKDIR"
+
           CANDIDATES=(
             "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_13.14.1ubuntu5_all.deb"
             "http://ftp.debian.org/debian/pool/main/d/debhelper/debhelper_12.10_all.deb"
             "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_12.10_all.deb"
           )
+
           for url in "${CANDIDATES[@]}"; do
-            if wget -q "$url" -O debhelper-full.deb; then break; else rm -f debhelper-full.deb; fi
+            echo "Trying $url"
+            if wget -q "$url" -O debhelper-full.deb; then
+              break
+            else
+              rm -f debhelper-full.deb
+            fi
           done
-          if [ ! -f debhelper-full.deb ]; then echo "Failed to download a debhelper package"; exit 1; fi
+
+          if [ ! -f debhelper-full.deb ]; then
+            echo "Failed to download a debhelper package; aborting" >&2
+            exit 1
+          fi
+
           dpkg-deb -x debhelper-full.deb extracted
           COMPAT_FILE=extracted/usr/share/debhelper/compat
-          if [ ! -f "$COMPAT_FILE" ]; then echo "compat file not found"; exit 1; fi
+
+          if [ ! -f "$COMPAT_FILE" ]; then
+            echo "compat file not found inside downloaded package" >&2
+            exit 1
+          fi
+
           PKGDIR=pkg
           mkdir -p "$PKGDIR/DEBIAN" "$PKGDIR/usr/share/debhelper"
           cat > "$PKGDIR/DEBIAN/control" <<CONTROL_EOF
@@ -51,11 +71,15 @@ Maintainer: CI <ci@example.com>
 Description: Compatibility level 12 for debhelper
  This package provides only the debhelper-compat file set to level 12.
 CONTROL_EOF
+
           cp "$COMPAT_FILE" "$PKGDIR/usr/share/debhelper/compat"
           dpkg-deb --build "$PKGDIR" debhelper-compat-12_12.10ubuntu1_all.deb
           sudo dpkg -i debhelper-compat-12_12.10ubuntu1_all.deb || sudo apt -f install -y
+
+          # cleanup
           cd /
           rm -rf "$WORKDIR"
+
           echo "Installed debhelper-compat via fallback package"
 
       - name: Download Linux 6.11 source
