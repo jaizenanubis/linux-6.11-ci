@@ -29,19 +29,19 @@ jobs:
             dh-python \
             wget
 
-      - name: Install debhelper 12 (direct from Debian)
+      - name: Force debhelper compat level 12
         run: |
           set -e
 
-          echo "Downloading debhelper_12.10_all.deb from Debian..."
-          wget -q \
-            https://deb.debian.org/debian/pool/main/d/debhelper/debhelper_12.10_all.deb \
-            -O debhelper_12.10_all.deb
+          echo "Installing debhelper from Ubuntu..."
+          sudo apt update
+          sudo apt install -y debhelper
 
-          echo "Installing debhelper 12..."
-          sudo dpkg -i debhelper_12.10_all.deb || sudo apt -f install -y
+          echo "Forcing compat level 12..."
+          sudo mkdir -p /usr/share/debhelper
+          echo "12" | sudo tee /usr/share/debhelper/compat >/dev/null
 
-          echo "debhelper 12 installed successfully"
+          echo "Compat level 12 installed successfully"
 
       - name: Download Linux 6.11 source
         run: |
@@ -65,13 +65,13 @@ jobs:
         run: |
           set -e
           cd kernel
-          make -j"$(nproc)"
+          make -j"\$(nproc)"
 
       - name: Build Debian packages
         run: |
           set -e
           cd kernel
-          make bindeb-pkg -j"$(nproc)"
+          make bindeb-pkg -j"\$(nproc)"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
