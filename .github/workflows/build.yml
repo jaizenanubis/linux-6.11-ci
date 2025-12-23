@@ -35,8 +35,7 @@ jobs:
 
           echo "Trying direct debhelper-compat .deb from archive.ubuntu.com..."
           if wget -q \
-            http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb \
-            -O debhelper-compat_12.10ubuntu1_all.deb
+           http://ftp.debian.org/debian/pool/main/d/debhelper/debhelper_12.10_all.deb
           then
             sudo dpkg -i debhelper-compat_12.10ubuntu1_all.deb || sudo apt -f install -y
             echo "Installed debhelper-compat from archive.ubuntu.com"
