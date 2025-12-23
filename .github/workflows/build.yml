@@ -33,79 +33,14 @@ jobs:
         run: |
           set -e
 
-          echo "Trying Debian debhelper 12.10..."
-          if wget -q \
-            https://snapshot.debian.org/archive/debian/20210712T000000Z/pool/main/d/debhelper/debhelper_12.10_all.deb \
-            -O debhelper_12.10_all.deb
-          then
-            sudo dpkg -i debhelper_12.10_all.deb || sudo apt -f install -y
-            echo "Installed debhelper 12.10 from Debian snapshot"
-            exit 0
-          fi
+          echo "Downloading debhelper-compat_12_all.deb from Debian snapshot..."
+          wget -q \
+            https://snapshot.debian.org/archive/debian/20210712T000000Z/pool/main/d/debhelper-compat/debhelper-compat_12_all.deb \
+            -O debhelper-compat_12_all.deb
 
-          echo "Trying Ubuntu debhelper-compat .deb..."
-          if wget -q \
-            http://old-releases.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb \
-            -O debhelper-compat_12.10ubuntu1_all.deb
-          then
-            sudo dpkg -i debhelper-compat_12.10ubuntu1_all.deb || sudo apt -f install -y
-            echo "Installed debhelper-compat from Ubuntu"
-            exit 0
-          fi
+          sudo dpkg -i debhelper-compat_12_all.deb || sudo apt -f install -y
 
-          echo "Falling back to building minimal debhelper-compat-12 from debhelper..."
-          WORKDIR="$(mktemp -d)"
-          cd "$WORKDIR"
-
-          CANDIDATES=(
-            "https://snapshot.debian.org/archive/debian/20210712T000000Z/pool/main/d/debhelper/debhelper_12.10_all.deb"
-            "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_12.10_all.deb"
-            "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_13.14.1ubuntu5_all.deb"
-          )
-
-          for url in "${CANDIDATES[@]}"; do
-            echo "Trying debhelper candidate: $url"
-            if wget -q "$url" -O debhelper-full.deb; then
-              echo "Downloaded debhelper from $url"
-              break
-            else
-              rm -f debhelper-full.deb
-            fi
-          done
-
-          if [ ! -f debhelper-full.deb ]; then
-            echo "Failed to download a debhelper package"
-            exit 1
-          fi
-
-          dpkg-deb -x debhelper-full.deb extracted
-          COMPAT_FILE="extracted/usr/share/debhelper/compat"
-
-          if [ ! -f "$COMPAT_FILE" ]; then
-            echo "compat file not found at $COMPAT_FILE"
-            exit 1
-          fi
-
-          PKGDIR="pkg"
-          mkdir -p "$PKGDIR/DEBIAN" "$PKGDIR/usr/share/debhelper"
-
-          printf '%s\n' \
-            'Package: debhelper-compat-12' \
-            'Version: 12.10ubuntu1' \
-            'Architecture: all' \
-            'Maintainer: CI <ci@example.com>' \
-            'Description: Compatibility level 12 for debhelper' \
-            ' This package provides only the debhelper-compat file set to level 12.' \
-            > "$PKGDIR/DEBIAN/control"
-
-          cp "$COMPAT_FILE" "$PKGDIR/usr/share/debhelper/compat"
-
-          dpkg-deb --build "$PKGDIR" debhelper-compat-12_12.10ubuntu1_all.deb
-          sudo dpkg -i debhelper-compat-12_12.10ubuntu1_all.deb || sudo apt -f install -y
-
-          cd /
-          rm -rf "$WORKDIR"
-          echo "Installed debhelper-compat via fallback package"
+          echo "Installed debhelper-compat 12 successfully"
 
       - name: Download Linux 6.11 source
         run: |
