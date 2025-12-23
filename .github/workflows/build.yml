@@ -33,9 +33,9 @@ jobs:
         run: |
           set -e
 
-          echo "Downloading debhelper-compat_12_all.deb from Debian snapshot..."
+          echo "Downloading debhelper-compat_12_all.deb from Debian..."
           wget -q \
-            https://snapshot.debian.org/archive/debian/20210712T000000Z/pool/main/d/debhelper-compat/debhelper-compat_12_all.deb \
+            https://deb.debian.org/debian/pool/main/d/debhelper-compat/debhelper-compat_12_all.deb \
             -O debhelper-compat_12_all.deb
 
           sudo dpkg -i debhelper-compat_12_all.deb || sudo apt -f install -y
