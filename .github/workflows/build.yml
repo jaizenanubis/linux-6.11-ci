@@ -36,10 +36,11 @@ jobs:
           echo "Adding Ubuntu 20.04 repository for debhelper-compat 12..."
           echo "deb http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee /etc/apt/sources.list.d/focal.list
 
-          echo "Package: *
-Pin: release n=focal
-Pin-Priority: 50
-" | sudo tee /etc/apt/preferences.d/focal-pin
+          sudo tee /etc/apt/preferences.d/focal-pin >/dev/null <<EOF
+          Package: *
+          Pin: release n=focal
+          Pin-Priority: 50
+          EOF
 
           sudo apt update
 
