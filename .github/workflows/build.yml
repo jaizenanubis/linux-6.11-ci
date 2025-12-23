@@ -29,30 +29,19 @@ jobs:
             dh-python \
             wget
 
-      - name: Install debhelper-compat 12
+      - name: Install debhelper 12 (direct from Debian)
         run: |
           set -e
 
-          echo "Adding Ubuntu 20.04 repository for debhelper-compat 12..."
-          echo "deb http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee /etc/apt/sources.list.d/focal.list
+          echo "Downloading debhelper_12.10_all.deb from Debian..."
+          wget -q \
+            https://deb.debian.org/debian/pool/main/d/debhelper/debhelper_12.10_all.deb \
+            -O debhelper_12.10_all.deb
 
-          sudo tee /etc/apt/preferences.d/focal-pin >/dev/null <<EOF
-          Package: *
-          Pin: release n=focal
-          Pin-Priority: 50
-          EOF
+          echo "Installing debhelper 12..."
+          sudo dpkg -i debhelper_12.10_all.deb || sudo apt -f install -y
 
-          sudo apt update
-
-          echo "Installing debhelper-compat 12 from Ubuntu 20.04..."
-          sudo apt install -y debhelper-compat=12.10ubuntu1
-
-          echo "Cleaning up..."
-          sudo rm /etc/apt/sources.list.d/focal.list
-          sudo rm /etc/apt/preferences.d/focal-pin
-          sudo apt update
-
-          echo "debhelper-compat 12 installed successfully"
+          echo "debhelper 12 installed successfully"
 
       - name: Download Linux 6.11 source
         run: |
