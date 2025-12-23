@@ -33,14 +33,26 @@ jobs:
         run: |
           set -e
 
-          echo "Downloading debhelper-compat_12_all.deb from Debian..."
-          wget -q \
-            https://deb.debian.org/debian/pool/main/d/debhelper-compat/debhelper-compat_12_all.deb \
-            -O debhelper-compat_12_all.deb
+          echo "Adding Ubuntu 20.04 repository for debhelper-compat 12..."
+          echo "deb http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee /etc/apt/sources.list.d/focal.list
 
-          sudo dpkg -i debhelper-compat_12_all.deb || sudo apt -f install -y
+          echo "Package: *
+Pin: release n=focal
+Pin-Priority: 50
+" | sudo tee /etc/apt/preferences.d/focal-pin
 
-          echo "Installed debhelper-compat 12 successfully"
+          sudo apt update
+
+          echo "Installing debhelper-compat 12 from Ubuntu 20.04..."
+          sudo apt install -y debhelper-compat=12.10ubuntu1
+
+          echo "Cleaning up..."
+          sudo rm /etc/apt/sources.list.d/focal.list
+          sudo rm /etc/apt/preferences.d/focal-pin
+          sudo apt update
+
+          echo "debhelper-compat 12 installed successfully"
+
 
       - name: Download Linux 6.11 source
         run: |
