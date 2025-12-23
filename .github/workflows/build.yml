@@ -35,11 +35,11 @@ jobs:
 
           echo "Trying Debian debhelper 12.10..."
           if wget -q \
-            http://ftp.debian.org/debian/pool/main/d/debhelper/debhelper_12.10_all.deb \
+            https://snapshot.debian.org/archive/debian/20210712T000000Z/pool/main/d/debhelper/debhelper_12.10_all.deb \
             -O debhelper_12.10_all.deb
           then
             sudo dpkg -i debhelper_12.10_all.deb || sudo apt -f install -y
-            echo "Installed debhelper 12.10 from Debian"
+            echo "Installed debhelper 12.10 from Debian snapshot"
             exit 0
           fi
 
@@ -58,7 +58,7 @@ jobs:
           cd "$WORKDIR"
 
           CANDIDATES=(
-            "http://ftp.debian.org/debian/pool/main/d/debhelper/debhelper_12.10_all.deb"
+            "https://snapshot.debian.org/archive/debian/20210712T000000Z/pool/main/d/debhelper/debhelper_12.10_all.deb"
             "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_12.10_all.deb"
             "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_13.14.1ubuntu5_all.deb"
           )
