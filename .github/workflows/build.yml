@@ -65,13 +65,13 @@ jobs:
         run: |
           set -e
           cd kernel
-          make -j"\$(nproc)"
+          make -j$(nproc)
 
       - name: Build Debian packages
         run: |
           set -e
           cd kernel
-          make bindeb-pkg -j"\$(nproc)"
+          make bindeb-pkg -j$(nproc)
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
