@@ -33,22 +33,23 @@ jobs:
         run: |
           set -e
 
-          echo "Trying direct debhelper-compat .deb from archive.ubuntu.com..."
+          echo "Trying Debian debhelper 12.10..."
           if wget -q \
-           http://ftp.debian.org/debian/pool/main/d/debhelper/debhelper_12.10_all.deb
+            http://ftp.debian.org/debian/pool/main/d/debhelper/debhelper_12.10_all.deb \
+            -O debhelper_12.10_all.deb
           then
-            sudo dpkg -i debhelper-compat_12.10ubuntu1_all.deb || sudo apt -f install -y
-            echo "Installed debhelper-compat from archive.ubuntu.com"
+            sudo dpkg -i debhelper_12.10_all.deb || sudo apt -f install -y
+            echo "Installed debhelper 12.10 from Debian"
             exit 0
           fi
 
-          echo "Trying direct debhelper-compat .deb from old-releases.ubuntu.com..."
+          echo "Trying Ubuntu debhelper-compat .deb..."
           if wget -q \
             http://old-releases.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper-compat_12.10ubuntu1_all.deb \
             -O debhelper-compat_12.10ubuntu1_all.deb
           then
             sudo dpkg -i debhelper-compat_12.10ubuntu1_all.deb || sudo apt -f install -y
-            echo "Installed debhelper-compat from old-releases.ubuntu.com"
+            echo "Installed debhelper-compat from Ubuntu"
             exit 0
           fi
 
@@ -57,9 +58,9 @@ jobs:
           cd "$WORKDIR"
 
           CANDIDATES=(
-            "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_13.14.1ubuntu5_all.deb"
             "http://ftp.debian.org/debian/pool/main/d/debhelper/debhelper_12.10_all.deb"
             "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_12.10_all.deb"
+            "http://archive.ubuntu.com/ubuntu/pool/main/d/debhelper/debhelper_13.14.1ubuntu5_all.deb"
           )
 
           for url in "${CANDIDATES[@]}"; do
