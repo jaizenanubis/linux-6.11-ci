@@ -37,10 +37,10 @@ jobs:
           echo "deb http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee /etc/apt/sources.list.d/focal.list
 
           sudo tee /etc/apt/preferences.d/focal-pin >/dev/null <<EOF
-          Package: *
-          Pin: release n=focal
-          Pin-Priority: 50
-          EOF
+Package: *
+Pin: release n=focal
+Pin-Priority: 50
+EOF
 
           sudo apt update
 
@@ -53,7 +53,6 @@ jobs:
           sudo apt update
 
           echo "debhelper-compat 12 installed successfully"
-
 
       - name: Download Linux 6.11 source
         run: |
